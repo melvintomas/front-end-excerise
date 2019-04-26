@@ -1,27 +1,34 @@
 import { LitElement, html, css } from 'lit-element';
-import { openWc } from './open-wc-logo';
+import './book';
+import './table-of-contents';
 
 class MyApp extends LitElement {
   static get properties() {
     return {
       title: { type: String },
+      toc: { type: Array },
     };
   }
 
   constructor() {
     super();
-    this.title = 'open-wc';
+    this.apiUrl = './book.json';
+    fetch(this.apiUrl)
+      .then(data => data.json())
+      .then(json => {
+        this.title = json.title;
+        this.contributors = json.contributors;
+        this.toc = json.toc;
+      });
   }
 
   static get styles() {
     return [
       css`
         :host {
-          text-align: center;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          align-items: center;
           justify-content: center;
           font-size: calc(10px + 2vmin);
           color: #1a2b42;
@@ -30,27 +37,13 @@ class MyApp extends LitElement {
         header {
           margin: auto;
         }
-
-        svg {
-          animation: app-logo-spin infinite 20s linear;
-        }
-
         a {
           color: #217ff9;
         }
 
-        .app-footer {
-          color: #a8a8a8;
-          font-size: calc(10px + 0.5vmin);
-        }
-
-        @keyframes app-logo-spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+        .panel {
+          background: white;
+          box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
         }
       `,
     ];
@@ -58,23 +51,21 @@ class MyApp extends LitElement {
 
   render() {
     return html`
-      <header class="app-header">
-        ${openWc}
-        <h1>${this.title}</h1>
-        <p>Edit <code>src/my-app.js</code> and save to reload.</p>
-        <a
-          class="app-link"
-          href="https://open-wc.org/developing/#examples"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Code examples
-        </a>
-      </header>
-      <p class="app-footer">
-        🚽 Made with love by
-        <a target="_blank" rel="noopener noreferrer" href="https://github.com/open-wc">open-wc</a>.
-      </p>
+      <style>
+        .toc li {
+          padding: 10px;
+          display: block;
+        }
+
+        .toc {
+          background: white;
+        }
+
+        .panel {
+        }
+      </style>
+      <my-book title="${this.title}" contributors="${this.contributors}"></my-book>
+      <my-toc .toc="${this.toc}"></my-toc>
     `;
   }
 }
